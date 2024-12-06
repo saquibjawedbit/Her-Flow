@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "658806725138",
+    "project_id": "herflow01-a46e1",
+    "storage_bucket": "herflow01-a46e1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:658806725138:android:5433ae2ce216db7d4416cb",
+        "android_client_info": {
+          "package_name": "com.example.her_flow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSuOHuE3sT2d78QCi1epe36C9_-7YwhJE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
