@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:her_flow/screens/HomeScreen.dart';
 import 'package:her_flow/screens/authentication/forget_password_screen.dart';
@@ -10,7 +8,6 @@ import 'package:her_flow/screens/chat/userchatscreen.dart';
 
 import '../../theme/theme.dart';
 import '../../widgets/custom_scaffold.dart';
-
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -28,7 +25,6 @@ class _SignInScreenState extends State<SignInScreen> {
   bool loading = false;
   final _auth = FirebaseAuth.instance;
 
-
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -40,7 +36,6 @@ class _SignInScreenState extends State<SignInScreen> {
               height: 10,
             ),
           ),
-
           Expanded(
             flex: 7,
             child: Container(
@@ -70,36 +65,38 @@ class _SignInScreenState extends State<SignInScreen> {
                         height: 40.0,
                       ),
                       DropdownButton<String>(
-                          icon: Icon(Icons.supervised_user_circle_rounded,size:60,color: Colors.black,),
-                          style: TextStyle(color: Colors.black),
-
+                          icon: const Icon(
+                            Icons.supervised_user_circle_rounded,
+                            size: 60,
+                            color: Colors.black,
+                          ),
+                          style: const TextStyle(color: Colors.black),
                           value: dropdownvalue_user,
-                          items:[
+                          items: [
                             DropdownMenuItem<String>(
                               value: 'zero',
-                              child:  Container(
+                              child: Container(
                                 child: Text('None'),
                               ),
                             ),
                             DropdownMenuItem<String>(
                               value: 'one',
-                              child:  Container(
+                              child: Container(
                                 child: Text('User'),
                               ),
                             ),
                             DropdownMenuItem<String>(
                               value: 'two',
-                              child:  Container(
+                              child: Container(
                                 child: Text('Doctor'),
                               ),
                             ),
-                          ] ,
-                          onChanged: (String? value){
+                          ],
+                          onChanged: (String? value) {
                             setState(() {
                               dropdownvalue_user = value!;
                             });
-                          }
-                      ),
+                          }),
                       const SizedBox(
                         height: 25,
                       ),
@@ -114,7 +111,6 @@ class _SignInScreenState extends State<SignInScreen> {
                         },
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-
                           label: const Text('Email'),
                           hintText: 'Enter Email',
                           hintStyle: const TextStyle(
@@ -154,8 +150,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                 : Icons.visibility),
                             onPressed: () {
                               setState(
-                                    () {
-                                  visible  = !visible;
+                                () {
+                                  visible = !visible;
                                 },
                               );
                             },
@@ -185,12 +181,14 @@ class _SignInScreenState extends State<SignInScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-
                           GestureDetector(
-                            onTap: (){
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (e) => const ForgetScreen(),
-                              ),);
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (e) => const ForgetScreen(),
+                                ),
+                              );
                             },
                             child: Text(
                               'Forget password?',
@@ -205,7 +203,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       const SizedBox(
                         height: 25.0,
                       ),
-                       _loginBtn(),
+                      _loginBtn(),
                       const SizedBox(
                         height: 25.0,
                       ),
@@ -218,7 +216,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               color: Colors.grey.withOpacity(0.5),
                             ),
                           ),
-
                           Expanded(
                             child: Divider(
                               thickness: 0.7,
@@ -276,69 +273,66 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+
   Widget _loginBtn() {
     return ElevatedButton(
-      onPressed: () async{
-
-
+      onPressed: () async {
         setState(() {
-            loading = true;
-          });
+          loading = true;
+        });
 
-          if (_formSignInKey.currentState!.validate()  ) {
-            _auth.signInWithEmailAndPassword(email: email.text.toString(), password: password.text.toString()).then((value) {
-              setState(() {
-                loading = false;
-              });
-              GlobalVariable.toast(context, "Login Successfully");
-              String? id = _auth.currentUser?.uid;
-
-               if(dropdownvalue_user=="one"){
-                Navigator.pushReplacement(context, MaterialPageRoute(
-                     builder: (e) => HomeScreen(),));
-
-               }
-               else if(dropdownvalue_user=="zero"){
-                 GlobalVariable.toast(context, "Please enter Correct User Type");
-               }
-               else{
-                 Navigator.pushReplacement(context, MaterialPageRoute(
-                   builder: (e) => ChatScreen(type: 'doctor',),));
-
-               }
-
-
-
-            }).onError((error, stackTrace){
-              GlobalVariable.toast(context, "${error.toString()}");
-
-
-              setState(() {
-                loading = false;
-              });
+        if (_formSignInKey.currentState!.validate()) {
+          _auth
+              .signInWithEmailAndPassword(
+                  email: email.text.toString(),
+                  password: password.text.toString())
+              .then((value) {
+            setState(() {
+              loading = false;
             });
+            GlobalVariable.toast(context, "Login Successfully");
+            String? id = _auth.currentUser?.uid;
 
+            if (dropdownvalue_user == "one") {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (e) => HomeScreen(),
+                  ));
+            } else if (dropdownvalue_user == "zero") {
+              GlobalVariable.toast(context, "Please enter Correct User Type");
+            } else {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (e) => ChatScreen(
+                      type: 'doctor',
+                    ),
+                  ));
+            }
+          }).onError((error, stackTrace) {
+            GlobalVariable.toast(context, "${error.toString()}");
 
-          }
-
-
-
+            setState(() {
+              loading = false;
+            });
+          });
+        }
       },
-      child: loading? CircularProgressIndicator():const SizedBox(
-          width: double.infinity,
-          child: Text(
-            "Sign-in ",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20),
-          )),
       style: ElevatedButton.styleFrom(
         shape: const StadiumBorder(),
-        primary: Colors.blue,
+        backgroundColor: Colors.blue,
         padding: const EdgeInsets.symmetric(vertical: 16),
       ),
+      child: loading
+          ? const CircularProgressIndicator()
+          : const SizedBox(
+              width: double.infinity,
+              child: Text(
+                "Sign-in ",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20),
+              )),
     );
   }
-
-
-
 }

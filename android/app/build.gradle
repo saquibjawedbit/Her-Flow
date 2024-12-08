@@ -1,10 +1,11 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "dev.flutter.flutter-gradle-plugin"
-    id 'com.google.gms.google-services'
+    id "com.android.application"       // Required for Android apps
+    id "kotlin-android"                // Adds Kotlin support
+    id "dev.flutter.flutter-gradle-plugin" // Flutter Gradle plugin
+    id "com.google.gms.google-services" // Google services (e.g., Firebase)
 }
 
+// Load local properties (e.g., Flutter versioning)
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -13,18 +14,12 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
+// Default Flutter versioning setup
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode', '1').toInteger()
+def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0')
 
 android {
-    namespace "com.example.her_flow"
+    namespace "com.example.her_flow"   // Your app's namespace (package name)
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -34,41 +29,38 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '1.8' // Ensures compatibility with Java 8 features
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += 'src/main/kotlin' // Adds Kotlin source directory
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.example.her_flow"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion  23
+        applicationId "com.example.her_flow" // Replace with your unique app ID
+        minSdkVersion 23 // Minimum supported Android version
         targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
+        versionCode flutterVersionCode
         versionName flutterVersionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            // TODO: Add signing configurations for production releases
+            signingConfig signingConfigs.debug // Temporary for debug builds
         }
     }
 }
 
+// Flutter-specific settings
 flutter {
     source '../..'
 }
 
 dependencies {
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation "androidx.room:room-runtime:2.4.0-alpha03"
-    annotationProcessor "androidx.room:room-compiler:2.4.0-alpha03"
+    implementation platform('com.google.firebase:firebase-bom:32.7.0') // Firebase BOM
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version" // Kotlin standard library
+    implementation 'com.google.firebase:firebase-analytics' // Firebase Analytics
+    implementation "androidx.room:room-runtime:2.4.0-alpha03" // Room database
+    annotationProcessor "androidx.room:room-compiler:2.4.0-alpha03" // Room annotations processor
 }

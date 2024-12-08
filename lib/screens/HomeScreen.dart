@@ -1,7 +1,7 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:her_flow/screens/marketplace/marketplace_screen.dart';
 import 'package:her_flow/screens/methods.dart';
 import 'package:her_flow/screens/chat/userchatscreen.dart';
 import 'package:her_flow/screens/profile/profileScreen.dart';
@@ -19,10 +19,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-
-
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -42,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
               {'icon': Icons.message, 'label': 'Consultancy'},
               {'icon': Icons.calendar_month, 'label': 'Tracking'},
               {'icon': Icons.person, 'label': 'Profile'},
-
             ])
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
@@ -71,8 +66,6 @@ class StylishCard extends StatelessWidget {
     required this.cardWidth,
   }) : super(key: key);
 
-
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -84,27 +77,39 @@ class StylishCard extends StatelessWidget {
         ),
         child: InkWell(
           onTap: () {
-
-
-
-            if(label=="Tracking"){
-              Navigator.push(context, MaterialPageRoute(
-                builder: (e) =>  CalendarScreen(),
-              ),);
+            if (label == "Home") {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Marketplacescreen()));
+            } else if (label == "Tracking") {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (e) => CalendarScreen(),
+                ),
+              );
               // showDialog(
               //   context: context,
               //   builder: (context) => const CustomDatePickerDialog(),
               // );
-            }
-            else if(label == "Consultancy"){
-
-
-              Navigator.push(context, MaterialPageRoute(
-                builder: (e) =>  ChatScreen(type: 'user',),));
-            }
-            else if(label =="Profile"){
-              Navigator.push(context, MaterialPageRoute(
-                  builder: (e) =>  ProfileScreen(userType: "user", userId:FirebaseAuth.instance.currentUser!.uid.toString() ),));
+            } else if (label == "Consultancy") {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (e) => ChatScreen(
+                      type: 'user',
+                    ),
+                  ));
+            } else if (label == "Profile") {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (e) => ProfileScreen(
+                        userType: "user",
+                        userId:
+                            FirebaseAuth.instance.currentUser!.uid.toString()),
+                  ));
             }
           },
           child: Column(
@@ -132,53 +137,48 @@ class StylishCard extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class CustomDatePickerDialog extends StatefulWidget {
-
-  const CustomDatePickerDialog({Key? key,}) : super(key: key);
+  const CustomDatePickerDialog({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<CustomDatePickerDialog> createState() => _CustomDatePickerDialogState();
 }
 
 class _CustomDatePickerDialogState extends State<CustomDatePickerDialog> {
-
-
-
-  DateTime?  _currentdate = DateTime.now();
-  DateTime? _prevdate  = DateTime.now();
+  DateTime? _currentdate = DateTime.now();
+  DateTime? _prevdate = DateTime.now();
   bool loading = false;
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference _databaseRef = FirebaseDatabase.instance.ref("user");
   int diff = 0;
-  void _selectDate(BuildContext context,String label, DateTime date) async {
-
+  void _selectDate(BuildContext context, String label, DateTime date) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       firstDate: DateTime(2000),
       lastDate: DateTime.now(),
       initialDate: date,
-
     );
 
-      if(label == "prevdate"){
-
-        setState(() {
-          _prevdate = picked;
-          diff = calculateDateDifference(DateFormat('yyyy-MM-dd').format(_prevdate!),DateFormat('yyyy-MM-dd').format(_currentdate!));
-        });
-      }
-      else{
-        setState(() {
-          _currentdate = picked;
-          diff = calculateDateDifference(DateFormat('yyyy-MM-dd').format(_prevdate!),DateFormat('yyyy-MM-dd').format(_currentdate!));
-        });
-      }
-
-
+    if (label == "prevdate") {
+      setState(() {
+        _prevdate = picked;
+        diff = calculateDateDifference(
+            DateFormat('yyyy-MM-dd').format(_prevdate!),
+            DateFormat('yyyy-MM-dd').format(_currentdate!));
+      });
+    } else {
+      setState(() {
+        _currentdate = picked;
+        diff = calculateDateDifference(
+            DateFormat('yyyy-MM-dd').format(_prevdate!),
+            DateFormat('yyyy-MM-dd').format(_currentdate!));
+      });
+    }
   }
 
   Future<void> _fetchUserData() async {
@@ -187,23 +187,22 @@ class _CustomDatePickerDialogState extends State<CustomDatePickerDialog> {
     });
 
     try {
-
       String? uidd = _auth.currentUser?.uid.toString();
 
       Query query = _databaseRef.child(uidd.toString());
       DataSnapshot snapshot = await query.get();
       debugPrint(snapshot.child('name').value.toString());
-       String currdate =  snapshot.child('currentdate').value.toString();
-       String prevdate  = snapshot.child('prevdate').value.toString();
-         if(currdate != 'na'){
-           _currentdate = DateTime.parse(currdate);
-         }
-         if(prevdate != "na"){
-           _prevdate = DateTime.parse(prevdate);
-         }
-     debugPrint(_currentdate.toString());
-      diff = calculateDateDifference(_prevdate.toString(), _currentdate.toString());
-
+      String currdate = snapshot.child('currentdate').value.toString();
+      String prevdate = snapshot.child('prevdate').value.toString();
+      if (currdate != 'na') {
+        _currentdate = DateTime.parse(currdate);
+      }
+      if (prevdate != "na") {
+        _prevdate = DateTime.parse(prevdate);
+      }
+      debugPrint(_currentdate.toString());
+      diff = calculateDateDifference(
+          _prevdate.toString(), _currentdate.toString());
     } catch (e) {
       print('Error: $e');
     }
@@ -211,6 +210,7 @@ class _CustomDatePickerDialogState extends State<CustomDatePickerDialog> {
       loading = false;
     });
   }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -229,80 +229,79 @@ class _CustomDatePickerDialogState extends State<CustomDatePickerDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-
-
             const SizedBox(height: 16.0),
-
-                   InkWell(
-                     onTap: () => _selectDate(context , "prevdate" ,_prevdate!),
-                     child: Container(
-                         width: double.infinity,
-                         padding: const EdgeInsets.symmetric(
-                             vertical: 16.0, horizontal: 12.0),
-                         decoration: BoxDecoration(
-                           borderRadius: BorderRadius.circular(8.0),
-                           border: Border.all(color: Colors.grey),
-                         ),
-                         child: Row(
-                           children: [
-                             Text("Last Period: "),
-                             Text(
-                               _prevdate!= null
-                                   ? DateFormat('dd-MM-yyyy').format(_prevdate!)
-                                   : "nill",
-                               style: const TextStyle(fontSize: 16.0,)
-                             ),
-                           ],
-                         )
-                     ),
-                   ),
-
-            const SizedBox(height: 16.0),
-
             InkWell(
-              onTap: () => _selectDate(context , "current" , _currentdate!),
+              onTap: () => _selectDate(context, "prevdate", _prevdate!),
               child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 12.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Row(
-                  children: [
-                    Text("Current Period: "),
-                    Text(
-                       _currentdate != null
-                          ? DateFormat('dd-MM-yyyy').format(_currentdate!)
-                          : 'Tap to select a date',
-                      style: const TextStyle(fontSize: 16.0),
-                    ),
-                  ],
-                )
-              ),
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: Row(
+                    children: [
+                      Text("Last Period: "),
+                      Text(
+                          _prevdate != null
+                              ? DateFormat('dd-MM-yyyy').format(_prevdate!)
+                              : "nill",
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                          )),
+                    ],
+                  )),
             ),
             const SizedBox(height: 16.0),
-            loading == true? CircularProgressIndicator():
-            Row(
-              children: [
-                Text("Days Count: ",
-                  style: TextStyle(fontSize: 18.0,),
-                ),
-                PTTextNeon(text: '$diff',color: Colors.deepOrange,
-                  font: "four",
-                  shine: true,
-                  shineDuration: Duration(milliseconds: 200),
-                  fontSize: 30,
-                  strokeWidthTextHigh: 3,
-                  blurRadius: 25,
-                  strokeWidthTextLow: 1,
-                  backgroundColor: Colors.black,
-                ),
-              ],
+            InkWell(
+              onTap: () => _selectDate(context, "current", _currentdate!),
+              child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 12.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.grey),
+                  ),
+                  child: Row(
+                    children: [
+                      Text("Current Period: "),
+                      Text(
+                        _currentdate != null
+                            ? DateFormat('dd-MM-yyyy').format(_currentdate!)
+                            : 'Tap to select a date',
+                        style: const TextStyle(fontSize: 16.0),
+                      ),
+                    ],
+                  )),
             ),
             const SizedBox(height: 16.0),
-
+            loading == true
+                ? CircularProgressIndicator()
+                : Row(
+                    children: [
+                      Text(
+                        "Days Count: ",
+                        style: TextStyle(
+                          fontSize: 18.0,
+                        ),
+                      ),
+                      PTTextNeon(
+                        text: '$diff',
+                        color: Colors.deepOrange,
+                        font: "four",
+                        shine: true,
+                        shineDuration: Duration(milliseconds: 200),
+                        fontSize: 30,
+                        strokeWidthTextHigh: 3,
+                        blurRadius: 25,
+                        strokeWidthTextLow: 1,
+                        backgroundColor: Colors.black,
+                      ),
+                    ],
+                  ),
+            const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -317,9 +316,8 @@ class _CustomDatePickerDialogState extends State<CustomDatePickerDialog> {
                     String? uidd = _auth.currentUser?.uid.toString();
                     _databaseRef.child(uidd.toString()).update({
                       'currentdate': "${_currentdate.toString()}",
-                      'prevdate' :   "${_prevdate.toString()}",
-                      'days_count' :"${diff}"
-
+                      'prevdate': "${_prevdate.toString()}",
+                      'days_count': "${diff}"
                     });
 
                     Navigator.pop(context);
@@ -351,9 +349,4 @@ class _CustomDatePickerDialogState extends State<CustomDatePickerDialog> {
       return -1; // Return -1 to indicate an error
     }
   }
-
 }
-
-
-
-

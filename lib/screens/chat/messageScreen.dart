@@ -4,7 +4,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:her_flow/screens/chat/userchatscreen.dart';
 
-
 class ChatRoom extends StatefulWidget {
   final String Rid;
   final String type;
@@ -13,7 +12,14 @@ class ChatRoom extends StatefulWidget {
   final String chatRoomId;
   final String Sname;
 
-  ChatRoom({required this.chatRoomId, required this.senderId, required this.Rname, required this.Sname, required this.type, required this.Rid,});
+  ChatRoom({
+    required this.chatRoomId,
+    required this.senderId,
+    required this.Rname,
+    required this.Sname,
+    required this.type,
+    required this.Rid,
+  });
 
   @override
   State<ChatRoom> createState() => _ChatRoomState();
@@ -27,28 +33,22 @@ class _ChatRoomState extends State<ChatRoom> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Future getImage() async {
-  void _clearmsg() async{
-      String temp = widget.type=="user"? "doctor":"user";
-      final docRef = FirebaseFirestore.instance.collection("chats").doc(widget.chatRoomId);
+  void _clearmsg() async {
+    String temp = widget.type == "user" ? "doctor" : "user";
+    final docRef =
+        FirebaseFirestore.instance.collection("chats").doc(widget.chatRoomId);
 
-      try {
-        final docSnapshot = await docRef.get();
+    try {
+      final docSnapshot = await docRef.get();
 
-        if(docSnapshot["one"]==widget.senderId.toString()){
-          docRef.update({
-            'one_count': 0
-          });
-        }
-        else{
-          docRef.update({
-            'from_count': 0
-          });
-        }
-
-      } catch (e) {
-        print("Error checking document existence: $e");
+      if (docSnapshot["one"] == widget.senderId.toString()) {
+        docRef.update({'one_count': 0});
+      } else {
+        docRef.update({'from_count': 0});
       }
-
+    } catch (e) {
+      print("Error checking document existence: $e");
+    }
   }
 
   @override
@@ -64,8 +64,8 @@ class _ChatRoomState extends State<ChatRoom> {
         'senderId': widget.senderId,
         'text': _message.text.toString(),
         'timestamp': FieldValue.serverTimestamp(),
-        'sendby' : widget.Sname,
-        "type" : "text",
+        'sendby': widget.Sname,
+        "type": "text",
         "isread": false
       };
 
@@ -76,48 +76,44 @@ class _ChatRoomState extends State<ChatRoom> {
           .collection('messages')
           .add(messages);
 
+      String temp = widget.type == "user" ? "doctor" : "user";
 
-        String temp = widget.type=="user"? "doctor":"user";
-
-      final docRef = FirebaseFirestore.instance.collection("chats").doc(widget.chatRoomId);
+      final docRef =
+          FirebaseFirestore.instance.collection("chats").doc(widget.chatRoomId);
       try {
         final docSnapshot = await docRef.get();
         if (docSnapshot.exists) {
-              if(docSnapshot["one"]==widget.senderId.toString()){
-                 int count = docSnapshot["from_count"];
-                 count=count+1;
-                 docRef.update({
-                   "from_count":count,
-                   'time' : FieldValue.serverTimestamp(),
-                 });
-              }
-              else{
-                int count = docSnapshot["one_count"];
-                count=count+1;
-                docRef.update({
-                  "one_count":count,
-                  'time' : FieldValue.serverTimestamp(),
-                });
-
-              }
+          if (docSnapshot["one"] == widget.senderId.toString()) {
+            int count = docSnapshot["from_count"];
+            count = count + 1;
+            docRef.update({
+              "from_count": count,
+              'time': FieldValue.serverTimestamp(),
+            });
+          } else {
+            int count = docSnapshot["one_count"];
+            count = count + 1;
+            docRef.update({
+              "one_count": count,
+              'time': FieldValue.serverTimestamp(),
+            });
+          }
         } else {
           docRef.set({
-            'one' : widget.senderId.toString(),
+            'one': widget.senderId.toString(),
             'one_count': 0,
-             'one_name' : widget.Sname.toString(),
+            'one_name': widget.Sname.toString(),
             'from': widget.Rid.toString(),
-            'from_name' :  widget.Rname.toString(),
+            'from_name': widget.Rname.toString(),
             'from_count': 1,
-            'time' : FieldValue.serverTimestamp(),
+            'time': FieldValue.serverTimestamp(),
           });
-
         }
       } catch (e) {
-        print("Error checking document existence: $e");
+        debugPrint("Error checking document existence: $e");
       }
-
     } else {
-      print("Enter Some Text");
+      debugPrint("Enter Some Text");
     }
   }
 
@@ -131,8 +127,7 @@ class _ChatRoomState extends State<ChatRoom> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back), // Custom icon
           onPressed: () {
-           Navigator.pop(context);
-
+            Navigator.pop(context);
           },
         ),
       ),
@@ -147,13 +142,14 @@ class _ChatRoomState extends State<ChatRoom> {
                     .collection('chats')
                     .doc(widget.chatRoomId)
                     .collection('messages')
-                    .orderBy("timestamp", descending:false)
+                    .orderBy("timestamp", descending: false)
                     .snapshots(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.data != null) {
                     for (var doc in snapshot.data!.docs) {
-                      if (doc['sendby'] != widget.Sname && doc['isread'] == false) {
+                      if (doc['sendby'] != widget.Sname &&
+                          doc['isread'] == false) {
                         // Update 'isRead' to true for messages not sent by the user
                         _firestore
                             .collection('chats')
@@ -170,10 +166,9 @@ class _ChatRoomState extends State<ChatRoom> {
                         Map<String, dynamic> map = snapshot.data!.docs[index]
                             .data() as Map<String, dynamic>;
                         return InkWell(
-                             onTap: (){
-
-                             },
-                            child: messages(size, map, context,snapshot.data!.docs[index].id));
+                            onTap: () {},
+                            child: messages(size, map, context,
+                                snapshot.data!.docs[index].id));
                       },
                     );
                   } else {
@@ -198,7 +193,6 @@ class _ChatRoomState extends State<ChatRoom> {
                       child: TextField(
                         controller: _message,
                         decoration: InputDecoration(
-
                             hintText: "Send Message",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
@@ -206,7 +200,7 @@ class _ChatRoomState extends State<ChatRoom> {
                       ),
                     ),
                     IconButton(
-                        icon: Icon(Icons.send), onPressed:onSendMessage),
+                        icon: Icon(Icons.send), onPressed: onSendMessage),
                   ],
                 ),
               ),
@@ -232,11 +226,13 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   @override
-  Widget messages(Size size, Map<String, dynamic> map, BuildContext context, String messageId) {
+  Widget messages(Size size, Map<String, dynamic> map, BuildContext context,
+      String messageId) {
     bool isSender = map['sendby'] == widget.Sname;
 
     return Column(
-      crossAxisAlignment: isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          isSender ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         GestureDetector(
           onLongPress: () {
@@ -246,7 +242,8 @@ class _ChatRoomState extends State<ChatRoom> {
               builder: (context) {
                 return AlertDialog(
                   title: Text("Delete Message"),
-                  content: Text("Are you sure you want to delete this message?"),
+                  content:
+                      Text("Are you sure you want to delete this message?"),
                   actions: [
                     TextButton(
                       onPressed: () {
